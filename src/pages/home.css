@@ -1,0 +1,47 @@
+.home-container {
+    max-width: 550px;
+    margin: 50px auto;
+    padding: 30px;
+}
+
+.status {
+    color: #2e8b57;
+    margin-bottom: 10px;
+}
+
+.description {
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.menu-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #2563eb;
+    color: white;
+    transition: 0.2s;
+}
+
+.menu-button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.network-status {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
