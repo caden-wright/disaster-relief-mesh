@@ -1,47 +1,513 @@
 .home-container {
-    max-width: 550px;
-    margin: 50px auto;
-    padding: 30px;
-}
-
-.status {
-    color: #2e8b57;
-    margin-bottom: 10px;
-}
-
-.description {
-    margin-bottom: 30px;
-    color: #666;
-}
-
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.menu-button {
     width: 100%;
-    padding: 14px;
+    max-width: 900px;
+
+    margin: 0 auto;
+    padding: 46px 24px 32px;
+}
+
+/* INTRO */
+
+.home-intro {
+    margin-bottom: 26px;
+
+    text-align: left;
+}
+
+.eyebrow {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--primary);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+.home-intro h1 {
+    margin: 0 0 8px;
+
+    color: var(--text-primary);
+
+    font-size: 34px;
+    letter-spacing: -0.6px;
+}
+
+.home-intro p {
+    max-width: 620px;
+
+    color: var(--text-secondary);
+
     font-size: 16px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #2563eb;
-    color: white;
-    transition: 0.2s;
+    line-height: 1.55;
 }
 
-.menu-button:hover {
-    background-color: #1d4ed8;
+/* CONNECTION */
+
+.connection-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 36px;
+    padding: 16px 18px;
+
+    background: var(--success-background);
+
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+}
+
+.connection-banner > div {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.connection-banner strong {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: var(--success);
+
+    font-size: 14px;
+}
+
+.connection-banner div span:not(.connection-dot) {
+    color: #4b5563;
+
+    font-size: 12px;
+}
+
+.connection-dot {
+    width: 11px;
+    height: 11px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.14);
+}
+
+.connection-badge {
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: var(--success);
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+/* SECTION */
+
+.services,
+.updates-section {
+    margin-bottom: 30px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    margin-bottom: 13px;
+
+    text-align: left;
+}
+
+.section-heading h2 {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 18px;
+}
+
+.section-heading span {
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+/* SERVICES */
+
+.service-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 14px;
+}
+
+.service-card {
+    position: relative;
+
+    min-height: 112px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    padding: 17px 18px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.035);
+
+    text-align: left;
+
+    transition:
+        transform 0.15s,
+        box-shadow 0.2s,
+        border-color 0.2s;
+}
+
+.service-card:hover {
     transform: translateY(-2px);
+
+    border-color: #93c5fd;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
 }
 
-.network-status {
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    font-weight: 500;
+.service-icon {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+    color: var(--primary);
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.medical-card .service-icon {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.hazard-card .service-icon {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.service-card h3,
+.messages-card h3 {
+    margin: 1px 28px 5px 0;
+
+    color: var(--text-primary);
+
+    font-size: 16px;
+}
+
+.service-card p,
+.messages-card p {
+    margin: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.card-arrow {
+    position: absolute;
+
+    top: 19px;
+    right: 18px;
+
+    color: #9ca3af;
+
+    font-size: 20px;
+
+    transition:
+        color 0.2s,
+        transform 0.2s;
+}
+
+.service-card:hover .card-arrow,
+.messages-card:hover .card-arrow {
+    color: var(--primary);
+
+    transform: translateX(3px);
+}
+
+/* MESSAGES */
+
+.messages-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 18px 20px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    text-align: left;
+
+    transition:
+        box-shadow 0.2s,
+        border-color 0.2s;
+}
+
+.messages-card:hover {
+    border-color: #93c5fd;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.message-symbol {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+    color: var(--primary);
+
+    font-weight: 800;
+}
+
+.message-preview {
+    padding-right: 30px;
+}
+
+/* FOOTNOTE */
+
+.terminal-note {
+    margin-top: 40px;
+
+    color: #9ca3af;
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+/* MOBILE */
+
+@media (max-width: 750px) {
+
+    .home-container {
+        padding: 22px 14px 20px;
+    }
+
+    .home-intro {
+        margin-bottom: 18px;
+    }
+
+    .eyebrow {
+        margin-bottom: 6px;
+
+        font-size: 10px;
+        letter-spacing: 1.1px;
+    }
+
+    .home-intro h1 {
+        margin-bottom: 6px;
+
+        font-size: 27px;
+        line-height: 1.15;
+    }
+
+    .home-intro p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .connection-banner {
+        margin-bottom: 24px;
+        padding: 13px 14px;
+
+        align-items: center;
+    }
+
+    .connection-banner strong {
+        font-size: 13px;
+    }
+
+    .connection-banner div span:not(.connection-dot) {
+        font-size: 11px;
+    }
+
+    .connection-badge {
+        display: none;
+    }
+
+    .section-heading {
+        margin-bottom: 10px;
+    }
+
+    .section-heading h2 {
+        font-size: 17px;
+    }
+
+    .section-heading span {
+        display: none;
+    }
+
+    .service-grid {
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+    .service-card {
+        min-height: auto;
+
+        padding: 15px;
+
+        gap: 13px;
+    }
+
+    .service-icon {
+        width: 40px;
+        height: 40px;
+
+        flex-basis: 40px;
+    }
+
+    .service-card h3,
+    .messages-card h3 {
+        margin-bottom: 3px;
+
+        font-size: 15px;
+    }
+
+    .service-card p,
+    .messages-card p {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .card-arrow {
+        top: 16px;
+        right: 15px;
+    }
+
+    .services,
+    .updates-section {
+        margin-bottom: 22px;
+    }
+
+    .messages-card {
+        padding: 15px;
+    }
+
+    .terminal-note {
+        margin-top: 24px;
+
+        font-size: 10px;
+    }
+
+    .safety-notice {
+        padding: 12px 13px;
+    }
+
+    .safety-notice p {
+        font-size: 11px;
+    }
+}
+
+.safety-notice {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-bottom: 16px;
+    padding: 14px 16px;
+
+    background: #fff7ed;
+
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+
+    text-align: left;
+}
+
+.notice-icon {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ffedd5;
+    color: #c2410c;
+
+    font-weight: 800;
+}
+
+.safety-notice strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #9a3412;
+
+    font-size: 13px;
+}
+
+.safety-notice p {
+    margin: 0;
+
+    color: #7c2d12;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.checkin-card .service-icon {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.resource-card .service-icon {
+    background: #eff6ff;
+    color: var(--primary);
 }

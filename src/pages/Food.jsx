@@ -1,3 +1,4 @@
+import "./Form.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -40,66 +41,112 @@ function Food(){
     }
 
     return (
-        <div>
-            <h1>Disaster Relief Network</h1>
-            <h3>Food & Water</h3>
-            <p>
-                Please describe your food and water needs below.
-            </p>
+        <div className="page-container">
 
-            <label
-            htmlFor="hungry">
-                How many people need assistance?
-            </label>
+            <header className="page-header">
+                <h1 className="page-title">Food & Water Assistance</h1>
 
-            <input 
-            type="number"
-            value={hungry}
-            onChange={(event) => setHungry(event.target.value)}
-            />
+                <p className="page-description">
+                    Request emergency food, drinking water, or both for
+                    yourself or others at your location.
+                </p>
+            </header>
 
-            <label>What sustenance is needed?</label>
+            <div className="form-card">
 
-            <select
-                value={sustenance}
-                onChange={(event) => setSustenance(event.target.value)}>
-                <option value="Food">Food</option>
-                <option value="Water">Water</option>
-                <option value="Both">Both</option>
-            </select>
+                <div className="form-group">
+                    <label htmlFor="hungry">
+                        How many people need assistance?
+                    </label>
 
-            <label>Urgency</label>
-            <select
-                value={urgency}
-                onChange={(event) => setUrgency(event.target.value)}>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
+                    <input
+                        id="hungry"
+                        type="number"
+                        min="1"
+                        value={hungry}
+                        onChange={(event) => setHungry(event.target.value)}
+                        placeholder="Number of people"
+                    />
+                </div>
 
-            <label>Approximate Location</label>
-            <input 
-            type="text"
-            value={location}
-            onChange={(event) => setLocation(event.target.value)}
-            placeholder="Example: Apartment 204, second floor"
-            />
+                <div className="form-group">
+                    <label htmlFor="sustenance">
+                        What is needed?
+                    </label>
 
-            <label>Additional Information</label>
-            <textarea
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                placeholder="Describe the emergency..."
-            />
+                    <select
+                        id="sustenance"
+                        value={sustenance}
+                        onChange={(event) => setSustenance(event.target.value)}
+                    >
+                        <option value="Food">Food</option>
+                        <option value="Water">Water</option>
+                        <option value="Both">Food & Water</option>
+                    </select>
+                </div>
 
-            <button onClick={handleSubmit}>
-                Submit
-            </button>
+                <div className="form-group">
+                    <label htmlFor="urgency">
+                        Urgency
+                    </label>
 
-            <Link to="/"> 
-                <button>Back to Home</button>
-            </Link>
+                    <select
+                        id="urgency"
+                        value={urgency}
+                        onChange={(event) => setUrgency(event.target.value)}
+                    >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
 
+                <div className="form-group">
+                    <label htmlFor="location">
+                        Approximate Location
+                    </label>
+
+                    <input
+                        id="location"
+                        type="text"
+                        value={location}
+                        onChange={(event) => setLocation(event.target.value)}
+                        placeholder="Example: Apartment 204, second floor"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="description">
+                        Additional Information
+                    </label>
+
+                    <textarea
+                        id="description"
+                        value={description}
+                        onChange={(event) => setDescription(event.target.value)}
+                        placeholder="Describe quantities needed or other important information..."
+                    />
+                </div>
+
+                <div className="form-actions">
+
+                    <button
+                        className="submit-button"
+                        onClick={handleSubmit}
+                        disabled={hungry === "" || location.trim() === ""}
+                    >
+                        Submit Food & Water Request
+                    </button>
+
+                    <Link to="/" style={{ flex: 1 }}>
+                        <button className="back-button">
+                            Back to Home
+                        </button>
+                    </Link>
+
+                </div>
+
+            </div>
         </div>
     );
 }
