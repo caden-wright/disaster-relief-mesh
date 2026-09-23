@@ -2,58 +2,59 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Form.css";
 import SubmissionResult from "../components/SubmissionResult";
+import { submitMessage } from "../api/helpPoint";
 
 function Resources() {
-
     const [resource, setResource] = useState("Water");
-    const [people, setPeople] = useState("1");
-    const [urgency, setUrgency] = useState("Normal");
+    const [quantity, setQuantity] = useState("1");
+    const [urgency, setUrgency] = useState("Low");
     const [submissionStatus, setSubmissionStatus] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    function handleSubmit() {
-
-        if (Number(people) <= 0) {
-            alert("Please enter a valid number of people.");
+    async function handleSubmit() {
+        if (Number(quantity) <= 0) {
+            alert("Please enter a valid quantity.");
             return;
         }
 
         const request = {
             type: "resource_request",
             resource,
-            people: Number(people),
+            quantity: Number(quantity),
             urgency
         };
 
-        console.log("Resource Request:", request);
+        setSubmitting(true);
 
-        setSubmissionStatus("received");
-
-        setResource("Water");
-        setPeople("1");
-        setUrgency("Normal");
+        try {
+            const result = await submitMessage(request);
+            setSubmissionStatus(result.status);
+        } catch (error) {
+            console.error("Resource Request failed:", error);
+            setSubmissionStatus("error");
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     if (submissionStatus) {
-    return (
-        <div className="page-container">
-
-            <SubmissionResult
-                status={submissionStatus}
-                onReset={() => {
-                    setSubmissionStatus(null);
-                    setResource("Water");
-                    setPeople("1");
-                    setUrgency("Normal");
-                }}
-            />
-
-        </div>
-    );
-}
+        return (
+            <div className="page-container">
+                <SubmissionResult
+                    status={submissionStatus}
+                    onReset={() => {
+                        setSubmissionStatus(null);
+                        setResource("Water");
+                        setQuantity("1");
+                        setUrgency("Low");
+                    }}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="page-container">
-
             <header className="page-header">
                 <h1 className="page-title">
                     Request Resources
@@ -67,7 +68,6 @@ function Resources() {
             <div className="form-card">
 
                 <div className="form-group">
-
                     <label>
                         Resource Needed
                     </label>
@@ -77,43 +77,48 @@ function Resources() {
                         role="radiogroup"
                         aria-label="Resource needed"
                     >
-
-                        {["Water", "Food", "Medicine", "Shelter"].map(
-                            (option) => (
-                                <button
-                                    key={option}
-                                    type="button"
-                                    className={
-                                        resource === option
-                                            ? "resource-option selected"
-                                            : "resource-option"
-                                    }
-                                    onClick={() => setResource(option)}
-                                    role="radio"
-                                    aria-checked={resource === option}
-                                >
-                                    {option}
-                                </button>
-                            )
-                        )}
-
+                        {[
+                            "Water",
+                            "Food",
+                            "Medicine",
+                            "Shelter"
+                        ].map((option) => (
+                            <button
+                                key={option}
+                                type="button"
+                                className={
+                                    resource === option
+                                        ? "resource-option selected"
+                                        : "resource-option"
+                                }
+                                onClick={() =>
+                                    setResource(option)
+                                }
+                                role="radio"
+                                aria-checked={
+                                    resource === option
+                                }
+                            >
+                                {option}
+                            </button>
+                        ))}
                     </div>
-
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="people">
-                        Number of People
+                    <label htmlFor="quantity">
+                        Quantity Needed
                     </label>
 
                     <input
-                        id="people"
+                        id="quantity"
                         type="number"
                         min="1"
-                        value={people}
+                        value={quantity}
                         onChange={(event) =>
-                            setPeople(event.target.value)
+                            setQuantity(event.target.value)
                         }
+                        placeholder="Enter quantity"
                     />
                 </div>
 
@@ -129,7 +134,8 @@ function Resources() {
                             setUrgency(event.target.value)
                         }
                     >
-                        <option>Normal</option>
+                        <option>Low</option>
+                        <option>Medium</option>
                         <option>High</option>
                     </select>
                 </div>
@@ -139,19 +145,25 @@ function Resources() {
                     <button
                         className="submit-button"
                         onClick={handleSubmit}
-                        disabled={people === ""}
+                        disabled={
+                            quantity === "" ||
+                            submitting
+                        }
                     >
-                        Submit Resource Request
+                        {submitting
+                            ? "Submitting..."
+                            : "Submit Resource Request"}
                     </button>
 
-                    <Link to="/" className="back-button">
+                    <Link
+                        to="/"
+                        className="back-button"
+                    >
                         Back to Home
                     </Link>
 
                 </div>
-
             </div>
-
         </div>
     );
 }

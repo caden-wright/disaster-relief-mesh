@@ -511,3 +511,78 @@
     background: #eff6ff;
     color: var(--primary);
 }
+
+.connection-warning {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.connection-warning strong {
+    color: #c2410c;
+}
+
+.connection-warning .connection-dot {
+    background: #f97316;
+    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.14);
+}
+
+.connection-warning .connection-badge {
+    color: #c2410c;
+}
+
+.connection-offline {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.connection-offline strong {
+    color: #dc2626;
+}
+
+.connection-offline .connection-dot {
+    background: #dc2626;
+    box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.14);
+}
+
+.connection-offline .connection-badge {
+    color: #dc2626;
+}
+
+.queue-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-top: -20px;
+    margin-bottom: 30px;
+    padding: 11px 14px;
+
+    background: #fff7ed;
+
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+
+    color: #9a3412;
+
+    font-size: 12px;
+}
+
+.queue-banner strong {
+    font-size: 13px;
+}
+
+.queue-banner span {
+    color: #7c2d12;
+}
+
+@media (max-width: 750px) {
+    .queue-banner {
+        flex-direction: column;
+        align-items: flex-start;
+
+        margin-top: -12px;
+        margin-bottom: 22px;
+    }
+}

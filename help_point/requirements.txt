@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+pydantic
+# Required only for real radio mode:
+# meshtastic

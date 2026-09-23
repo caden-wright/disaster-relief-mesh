@@ -1,13 +1,22 @@
 import { Link } from "react-router-dom";
 import "./Home.css";
 import Icon from "../components/Icon";
+import { useHelpPointStatus } from "../context/HelpPointStatusContext";
 
 function Home() {
+    const {
+        backendOnline,
+        meshOnline,
+        queueDepth
+    } = useHelpPointStatus();
+
     return (
         <div className="home-container">
 
             <section className="home-intro">
-                <span className="eyebrow">HELP POINT TERMINAL</span>
+                <span className="eyebrow">
+                    HELP POINT TERMINAL
+                </span>
 
                 <h1>Emergency Assistance</h1>
 
@@ -33,20 +42,58 @@ function Home() {
                 </div>
             </div>
 
-            <div className="connection-banner">
+            <div
+                className={
+                    backendOnline
+                        ? meshOnline
+                            ? "connection-banner"
+                            : "connection-banner connection-warning"
+                        : "connection-banner connection-offline"
+                }
+            >
                 <div>
                     <span className="connection-dot"></span>
 
                     <div>
-                        <strong>Connected to Help Point</strong>
+                        <strong>
+                            {!backendOnline
+                                ? "Help Point Unavailable"
+                                : meshOnline
+                                    ? "Mesh Network Connected"
+                                    : "Mesh Network Unavailable"}
+                        </strong>
+
                         <span>
-                            Requests can be submitted through this local station.
+                            {!backendOnline
+                                ? "The local Help Point service cannot currently be reached."
+                                : meshOnline
+                                    ? "Requests can be sent through the local mesh network."
+                                    : "Requests can still be accepted and queued for later delivery."}
                         </span>
                     </div>
                 </div>
 
-                <span className="connection-badge">ONLINE</span>
+                <span className="connection-badge">
+                    {!backendOnline
+                        ? "OFFLINE"
+                        : meshOnline
+                            ? "ONLINE"
+                            : "QUEUEING"}
+                </span>
             </div>
+
+            {backendOnline && queueDepth > 0 && (
+                <div className="queue-banner">
+                    <strong>
+                        {queueDepth} pending{" "}
+                        {queueDepth === 1 ? "message" : "messages"}
+                    </strong>
+
+                    <span>
+                        Stored locally and waiting for mesh connectivity.
+                    </span>
+                </div>
+            )}
 
             <section className="services">
 
@@ -123,8 +170,10 @@ function Home() {
                     <h2>Emergency Information</h2>
                 </div>
 
-                <Link to="/messages" className="messages-card">
-
+                <Link
+                    to="/messages"
+                    className="messages-card"
+                >
                     <div className="message-symbol">
                         <Icon name="messages" size={20} />
                     </div>
@@ -138,7 +187,6 @@ function Home() {
                     </div>
 
                     <span className="card-arrow">→</span>
-
                 </Link>
 
             </section>

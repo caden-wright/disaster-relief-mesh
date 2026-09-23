@@ -1,102 +1,125 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./AppHeader.css";
-import Icon from "./Icon";
+import { useHelpPointStatus } from "../context/HelpPointStatusContext";
 
 function AppHeader() {
-    const location = useLocation();
+    const {
+        status,
+        backendOnline,
+        meshOnline,
+        queueDepth
+    } = useHelpPointStatus();
+
+    let statusClass = "header-status";
+    let statusLabel = "Connecting...";
+    let statusDetail = "Checking Help Point";
+
+    if (!backendOnline) {
+        statusClass += " header-status-offline";
+        statusLabel = "Help Point Offline";
+        statusDetail = "Local service unavailable";
+    } else if (!meshOnline) {
+        statusClass += " header-status-warning";
+        statusLabel = "Mesh Offline";
+        statusDetail =
+            queueDepth > 0
+                ? `${queueDepth} queued ${queueDepth === 1 ? "message" : "messages"}`
+                : "Requests will be queued";
+    } else {
+        statusLabel = "Mesh Online";
+        statusDetail =
+            queueDepth > 0
+                ? `${queueDepth} pending ${queueDepth === 1 ? "message" : "messages"}`
+                : `Help Point ${status?.help_point_id ?? ""}`;
+    }
 
     return (
         <header className="app-header">
+
             <div className="header-content">
 
-                <Link to="/" className="brand">
+                <NavLink to="/" className="brand">
                     <div className="brand-icon">
-                        <Icon name="medical" size={26} />
+                        M
                     </div>
 
                     <div className="brand-text">
-                        <span className="brand-name">ReliefMesh</span>
+                        <span className="brand-name">
+                            MeshAid
+                        </span>
+
                         <span className="brand-subtitle">
-                            Disaster Relief Network
+                            Disaster Relief Help Point
                         </span>
                     </div>
-                </Link>
+                </NavLink>
 
-                <div
-                    className="header-status"
-                    role="status"
-                    aria-label="Help Point connected"
-                >
+                <div className={statusClass}>
                     <span className="status-dot"></span>
+
                     <div>
-                        <span className="status-label">Help Point Online</span>
+                        <span className="status-label">
+                            {statusLabel}
+                        </span>
+
                         <span className="status-detail">
-                            Local Station Connected
+                            {statusDetail}
                         </span>
                     </div>
                 </div>
 
             </div>
 
-            {location.pathname !== "/" && (
-                <nav
-                    className="app-nav"
-                    aria-label="Primary navigation"
+            <nav className="app-nav">
+
+                <NavLink
+                    to="/"
+                    end
+                    className={({ isActive }) =>
+                        isActive ? "active" : ""
+                    }
                 >
+                    Home
+                </NavLink>
 
-                    <Link
-                        to="/"
-                        className={location.pathname === "/" ? "active" : ""}
-                    >
-                        Home
-                    </Link>
+                <NavLink
+                    to="/check-in"
+                    className={({ isActive }) =>
+                        isActive ? "active" : ""
+                    }
+                >
+                    Check-In
+                </NavLink>
 
-                    <Link
-                        to="/check-in"
-                        className={
-                            location.pathname === "/check-in"
-                                ? "active"
-                                : ""
-                        }
-                    >
-                        Check-In
-                    </Link>
+                <NavLink
+                    to="/medical"
+                    className={({ isActive }) =>
+                        isActive ? "active" : ""
+                    }
+                >
+                    Medical
+                </NavLink>
 
-                    <Link
-                        to="/medical"
-                        className={
-                            location.pathname === "/medical"
-                                ? "active"
-                                : ""
-                        }
-                    >
-                        Medical
-                    </Link>
+                <NavLink
+                    to="/resources"
+                    className={({ isActive }) =>
+                        isActive ? "active" : ""
+                    }
+                >
+                    Resources
+                </NavLink>
 
-                    <Link
-                        to="/resources"
-                        className={
-                            location.pathname === "/resources"
-                                ? "active"
-                                : ""
-                        }
-                    >
-                        Resources
-                    </Link>
+                <NavLink
+                    to="/messages"
+                    className={({ isActive }) =>
+                        isActive ? "active" : ""
+                    }
+                >
+                    Messages
+                </NavLink>
 
-                    <Link
-                        to="/messages"
-                        className={
-                            location.pathname === "/messages"
-                                ? "active"
-                                : ""
-                        }
-                    >
-                        Messages
-                    </Link>
+            </nav>
 
-                </nav>
-            )}
         </header>
     );
 }

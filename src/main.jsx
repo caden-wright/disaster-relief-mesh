@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { registerSW } from "virtual:pwa-register";
+import { HelpPointStatusProvider } from "./context/HelpPointStatusContext";
 
 registerSW({
   immediate: true
@@ -12,7 +13,9 @@ registerSW({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <HelpPointStatusProvider>
+        <App />
+      </HelpPointStatusProvider>
     </BrowserRouter>
   </StrictMode>
 );

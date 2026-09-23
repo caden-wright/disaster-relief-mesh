@@ -2,155 +2,185 @@ import "./Form.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import SubmissionResult from "../components/SubmissionResult";
+import { submitMessage } from "../api/helpPoint";
 
-function Medical(){
+function Medical() {
+    const [severity, setSeverity] = useState("Serious");
+    const [condition, setCondition] = useState("Injury or bleeding");
+    const [patientName, setPatientName] = useState("");
+    const [patientAge, setPatientAge] = useState("");
 
-    const [injured, setInjured] = useState("")
-    const [severity, setSeverity] = useState("Minor")
-    const [conscious, setConscious] = useState("Unknown");
-    const [breathing, setBreathing] = useState("Unknown");
-    const [location, setLocation] = useState("");
     const [submissionStatus, setSubmissionStatus] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    function handleSubmit() {
-
-        if (Number(injured) <= 0) {
-            alert("Please enter a valid number of injured people.");
-            return;
-        }
-
-        if (location.trim() === "") {
-            alert("Please enter an approximate location.");
+    async function handleSubmit() {
+        if (
+            patientAge !== "" &&
+            (
+                Number(patientAge) < 0 ||
+                Number(patientAge) > 255
+            )
+        ) {
+            alert("Please enter a valid patient age.");
             return;
         }
 
         const request = {
-            injured,
+            type: "medical_urgent",
             severity,
-            conscious,
-            breathing,
-            location
+            condition,
+            patient_name: patientName.trim(),
+            patient_age:
+                patientAge === ""
+                    ? 0
+                    : Number(patientAge)
         };
 
-        console.log("Medical Request:", request);
+        setSubmitting(true);
 
-        setSubmissionStatus("received");
+        try {
+            const result = await submitMessage(request);
 
-        // Reset the form
-        setInjured("");
-        setSeverity("Minor");
-        setConscious("Unknown");
-        setBreathing("Unknown");
-        setLocation("");
-}
+            setSubmissionStatus(result.status);
+        } catch (error) {
+            console.error("Medical Request failed:", error);
 
-if (submissionStatus) {
-    return (
-        <div className="page-container">
+            setSubmissionStatus("error");
+        } finally {
+            setSubmitting(false);
+        }
+    }
 
-            <SubmissionResult
-                status={submissionStatus}
-                onReset={() => {
-                    setSubmissionStatus(null);
-                    setInjured("");
-                    setSeverity("Minor");
-                    setConscious("Unknown");
-                    setBreathing("Unknown");
-                    setLocation("");
-                }}
-            />
+    function resetForm() {
+        setSubmissionStatus(null);
+        setSeverity("Serious");
+        setCondition("Injury or bleeding");
+        setPatientName("");
+        setPatientAge("");
+    }
 
-        </div>
-    );
-}
+    if (submissionStatus) {
+        return (
+            <div className="page-container">
+
+                <SubmissionResult
+                    status={submissionStatus}
+                    onReset={resetForm}
+                />
+
+            </div>
+        );
+    }
 
     return (
         <div className="page-container">
 
             <header className="page-header">
-                <h1 className="page-title">Medical Assistance</h1>
+                <h1 className="page-title">
+                    Medical Assistance
+                </h1>
 
                 <p className="page-description">
-                    Describe your medical emergency below. Critical requests
-                    should be submitted as soon as possible.
+                    Report an urgent medical need to emergency coordinators.
                 </p>
             </header>
 
             <div className="form-card">
 
                 <div className="form-group">
-                    <label htmlFor="injured">
-                        How many people are injured?
+                    <label htmlFor="severity">
+                        Severity
+                    </label>
+
+                    <select
+                        id="severity"
+                        value={severity}
+                        onChange={(event) =>
+                            setSeverity(event.target.value)
+                        }
+                    >
+                        <option>Minor</option>
+                        <option>Serious</option>
+                        <option>Critical</option>
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="condition">
+                        Medical Condition
+                    </label>
+
+                    <select
+                        id="condition"
+                        value={condition}
+                        onChange={(event) =>
+                            setCondition(event.target.value)
+                        }
+                    >
+                        <option>Injury or bleeding</option>
+                        <option>Breathing difficulty</option>
+                        <option>Unconscious or unresponsive</option>
+                        <option>Chest pain</option>
+                        <option>Other or unknown</option>
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="patient-name">
+                        Patient Name
+                        <span> (optional)</span>
                     </label>
 
                     <input
-                        id="injured"
-                        type="number"
-                        min="1"
-                        value={injured}
-                        onChange={(event) => setInjured(event.target.value)}
-                        placeholder="Number of injured people"
+                        id="patient-name"
+                        type="text"
+                        maxLength="20"
+                        value={patientName}
+                        onChange={(event) =>
+                            setPatientName(event.target.value)
+                        }
+                        placeholder="Name if known"
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="conscious">
-                        Are the injured conscious?
-                    </label>
-
-                    <select
-                        id="conscious"
-                        value={conscious}
-                        onChange={(event) => setConscious(event.target.value)}
-                    >
-                        <option>Yes</option>
-                        <option>No</option>
-                        <option>Unknown</option>
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="breathing">
-                        Are they breathing?
-                    </label>
-
-                    <select
-                        id="breathing"
-                        value={breathing}
-                        onChange={(event) => setBreathing(event.target.value)}
-                    >
-                        <option>Yes</option>
-                        <option>No</option>
-                        <option>Unknown</option>
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="location">
-                        Approximate Location
+                    <label htmlFor="patient-age">
+                        Patient Age
+                        <span> (optional)</span>
                     </label>
 
                     <input
-                        id="location"
-                        type="text"
-                        value={location}
-                        onChange={(event) => setLocation(event.target.value)}
-                        placeholder="Example: Apartment 204, second floor"
+                        id="patient-age"
+                        type="number"
+                        min="0"
+                        max="255"
+                        value={patientAge}
+                        onChange={(event) =>
+                            setPatientAge(event.target.value)
+                        }
+                        placeholder="Age if known"
                     />
                 </div>
 
                 <div className="form-actions">
+
                     <button
                         className="submit-button"
                         onClick={handleSubmit}
-                        disabled={injured === "" || location.trim() === ""}
+                        disabled={submitting}
                     >
-                        Submit Medical Request
+                        {submitting
+                            ? "Submitting..."
+                            : "Submit Medical Request"}
                     </button>
 
-                    <Link to="/" className="back-button">
+                    <Link
+                        to="/"
+                        className="back-button"
+                    >
                         Back to Home
                     </Link>
+
                 </div>
 
             </div>

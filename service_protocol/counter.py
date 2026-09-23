@@ -1,6 +1,11 @@
 import os
 import threading
-import fcntl
+
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+
 
 class SequenceCounter:
     def __init__(self, persist_path="meshaid_counter.txt"):
@@ -11,27 +16,38 @@ class SequenceCounter:
     def _load(self):
         if not os.path.exists(self.persist_path):
             return 0
+
         try:
             with open(self.persist_path, "r") as f:
-                fcntl.flock(f, fcntl.LOCK_SH)
+                if fcntl is not None:
+                    fcntl.flock(f, fcntl.LOCK_SH)
+
                 try:
                     value = int(f.read().strip())
                 finally:
-                    fcntl.flock(f, fcntl.LOCK_UN)
+                    if fcntl is not None:
+                        fcntl.flock(f, fcntl.LOCK_UN)
+
             return value
+
         except (ValueError, OSError):
             return 0
 
     def _save(self, value):
         temp_path = self.persist_path + ".tmp"
+
         with open(temp_path, "w") as f:
-            fcntl.flock(f, fcntl.LOCK_EX)
+            if fcntl is not None:
+                fcntl.flock(f, fcntl.LOCK_EX)
+
             try:
                 f.write(str(value))
                 f.flush()
                 os.fsync(f.fileno())
             finally:
-                fcntl.flock(f, fcntl.LOCK_UN)
+                if fcntl is not None:
+                    fcntl.flock(f, fcntl.LOCK_UN)
+
         os.replace(temp_path, self.persist_path)
 
     def next(self):
