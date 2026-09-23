@@ -1,0 +1,42 @@
+{
+  "msg_type": {
+    "1": { "key": "CHECKIN", "label": "Safety check-in" },
+    "2": { "key": "RESOURCE_REQUEST", "label": "Resource request" },
+    "3": { "key": "MEDICAL_URGENT", "label": "Medical flag" },
+    "4": { "key": "ACK", "label": "Acknowledgement" }
+  },
+  "checkin_status": {
+    "1": { "label": "Safe" },
+    "2": { "label": "Safe, needs assistance" },
+    "3": { "label": "Not safe" }
+  },
+  "resource_type": {
+    "1": { "label": "Water" },
+    "2": { "label": "Food" },
+    "3": { "label": "Medicine" },
+    "4": { "label": "Shelter" },
+    "5": { "label": "Other" }
+  },
+  "urgency": {
+    "1": { "label": "Low" },
+    "2": { "label": "Medium" },
+    "3": { "label": "High" }
+  },
+  "severity": {
+    "1": { "label": "Minor" },
+    "2": { "label": "Serious" },
+    "3": { "label": "Critical" }
+  },
+  "condition_code": {
+    "1": { "label": "Injury or bleeding" },
+    "2": { "label": "Breathing difficulty" },
+    "3": { "label": "Unconscious or unresponsive" },
+    "4": { "label": "Chest pain" },
+    "5": { "label": "Other or unknown" }
+  },
+  "ack_status": {
+    "1": { "label": "Received" },
+    "2": { "label": "In progress" },
+    "3": { "label": "Resolved" }
+  }
+}
