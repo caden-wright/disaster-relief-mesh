@@ -1,0 +1,23 @@
+{
+  "radio": "serial:COM5",
+  "key_store_path": "../service_protocol/keys/gateway_key_store.json",
+  "db_path": "meshaid_gateway.db",
+  "host": "127.0.0.1",
+  "port": 8000,
+
+  "shelters": {
+    "1": "Shelter A",
+    "2": "Shelter B"
+  },
+  "nodes": {
+    "!0a000001": { "role": "gateway", "label": "Gateway (Incident Command)" },
+    "!0a000011": { "role": "relay", "label": "Relay 1 (solar)" },
+    "!0a000101": { "role": "help_point", "hp_id": 1, "label": "Help Point 1 - Shelter A" }
+  },
+
+  "rate_capacity": 20,
+  "rate_refill_seconds": 300,
+  "retention_hours": 72,
+  "node_degraded_after": 900,
+  "node_down_after": 3600
+}
