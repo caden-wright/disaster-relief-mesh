@@ -24,6 +24,9 @@ from typing import Callable, Optional
 log = logging.getLogger(__name__)
 
 PRIVATE_APP_TOPIC = "meshtastic.receive.data.PRIVATE_APP"
+# Parent topic: pypubsub also delivers every meshtastic.receive.* packet here
+# (text, telemetry, nodeinfo, position, PRIVATE_APP, ...). Used only for liveness.
+ANY_PACKET_TOPIC = "meshtastic.receive"
 
 
 @dataclass
@@ -83,6 +86,36 @@ def node_update_from_meshtastic(node: dict) -> NodeUpdate:
     )
 
 
+def heard_from_packet(packet: dict, received_at: Optional[float] = None,
+                      known_nodes=()) -> list:
+    """
+    Liveness updates for one received packet, of any type.
+
+    The gateway's radio has no clock (no GPS, no internet), so Meshtastic never
+    fills in `lastHeard` and the node DB alone leaves every relay at "never".
+    Instead we stamp the gateway's own wall clock on:
+
+    * the sender (`from`), with its SNR and hop count, and
+    * the last relay that forwarded it. Firmware 2.5+ reports only the low byte
+      of that relay's node number (`relayNode`), so it is matched against the
+      node numbers the radio knows; it is used only when exactly one matches.
+    """
+    now = received_at or time.time()
+    updates = []
+    sender = packet.get("from")
+    hops = None
+    if packet.get("hopStart") is not None and packet.get("hopLimit") is not None:
+        hops = packet["hopStart"] - packet["hopLimit"]
+    if isinstance(sender, int):
+        updates.append(NodeUpdate(node_num=sender, last_heard=now, snr=packet.get("rxSnr"), hops_away=hops))
+    relay_byte = packet.get("relayNode")
+    if isinstance(relay_byte, int) and relay_byte and hops:
+        matches = [n for n in known_nodes if isinstance(n, int) and (n & 0xFF) == relay_byte and n != sender]
+        if len(matches) == 1:
+            updates.append(NodeUpdate(node_num=matches[0], last_heard=now))
+    return updates
+
+
 def frame_from_packet(packet: dict, received_at: Optional[float] = None) -> Optional[RadioFrame]:
     decoded = packet.get("decoded") or {}
     payload = decoded.get("payload")
@@ -122,6 +155,7 @@ class MeshtasticSource(RadioSource):
         self._on_frame, self._on_node = on_frame, on_node
         # Subscribe before connecting so the initial node DB dump is not missed.
         pub.subscribe(self._handle_packet, PRIVATE_APP_TOPIC)
+        pub.subscribe(self._handle_any_packet, ANY_PACKET_TOPIC)
         pub.subscribe(self._handle_node, "meshtastic.node.updated")
 
         if self.mode == "serial":
@@ -140,6 +174,7 @@ class MeshtasticSource(RadioSource):
         from pubsub import pub
 
         for listener, topic in ((self._handle_packet, PRIVATE_APP_TOPIC),
+                                (self._handle_any_packet, ANY_PACKET_TOPIC),
                                 (self._handle_node, "meshtastic.node.updated")):
             try:
                 pub.unsubscribe(listener, topic)
@@ -160,6 +195,13 @@ class MeshtasticSource(RadioSource):
         frame = frame_from_packet(packet)
         if frame is not None:
             self._on_frame(frame)
+
+    def _handle_any_packet(self, packet, interface):
+        if interface is not self.interface or self._on_node is None:
+            return
+        known = (getattr(interface, "nodesByNum", None) or {}).keys()
+        for update in heard_from_packet(packet, known_nodes=known):
+            self._on_node(update)
 
     def _handle_node(self, node, interface):
         if interface is not self.interface or self._on_node is None or "num" not in node:

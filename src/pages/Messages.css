@@ -257,3 +257,13 @@
         min-height: 50px;
     }
 }
+.messages-empty {
+    margin: 0;
+    padding: 20px;
+
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+
+    color: var(--text-secondary);
+    line-height: 1.5;
+}

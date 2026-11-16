@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./Home.css";
+import "./home.css";
 import Icon from "../components/Icon";
 import { useHelpPointStatus } from "../context/HelpPointStatusContext";
 

@@ -3,32 +3,10 @@ import "./Messages.css";
 
 function Messages() {
 
-    const messages = [
-    {
-        id: 1,
-        type: "Emergency Alert",
-        style: "warning",
-        title: "Flood Warning",
-        body: "Avoid low-lying roads near the river.",
-        time: "5 minutes ago"
-    },
-    {
-        id: 2,
-        type: "Relief Update",
-        style: "relief",
-        title: "Food Distribution Available",
-        body: "Meals and bottled water are available at the Community Center.",
-        time: "18 minutes ago"
-    },
-    {
-        id: 3,
-        type: "Shelter Update",
-        style: "relief",
-        title: "Shelter Capacity Available",
-        body: "Temporary shelter space is available at the North Help Point.",
-        time: "35 minutes ago"
-    }
-    ];
+    // DI-09: Help Points only send uplink today; there is no channel for
+    // Incident Command to push alerts down to them yet. Show an honest empty
+    // state instead of sample alerts until two-way messaging exists.
+    const messages = [];
 
     return (
         <div className="messages-page">
@@ -51,6 +29,13 @@ function Messages() {
             </div>
 
             <div className="message-list">
+
+                {messages.length === 0 && (
+                    <p className="messages-empty">
+                        No alerts have been received at this Help Point.
+                        Check back with staff here for the latest updates.
+                    </p>
+                )}
 
                 {messages.map((message) => (
 

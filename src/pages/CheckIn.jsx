@@ -4,7 +4,15 @@ import "./Form.css";
 import SubmissionResult from "../components/SubmissionResult";
 import { submitMessage } from "../api/helpPoint";
 
+// Codes match shared/codes.json -> checkin_status (DI-06).
+const STATUS_OPTIONS = [
+    { code: 1, label: "Safe", detail: "Everyone in the group is safe." },
+    { code: 2, label: "Safe, needs assistance", detail: "Safe for now, but the group needs help." },
+    { code: 3, label: "Not safe", detail: "The group is in danger or cannot stay here." }
+];
+
 function CheckIn() {
+    const [status, setStatus] = useState(1);
     const [people, setPeople] = useState("1");
     const [submissionStatus, setSubmissionStatus] = useState(null);
     const [submitting, setSubmitting] = useState(false);
@@ -17,7 +25,7 @@ function CheckIn() {
 
         const request = {
             type: "safety_checkin",
-            status: "safe",
+            status,
             people: Number(people)
         };
 
@@ -41,6 +49,7 @@ function CheckIn() {
                     status={submissionStatus}
                     onReset={() => {
                         setSubmissionStatus(null);
+                        setStatus(1);
                         setPeople("1");
                     }}
                 />
@@ -53,21 +62,28 @@ function CheckIn() {
             <header className="page-header">
                 <h1 className="page-title">Safety Check-In</h1>
                 <p className="page-description">
-                    Let emergency coordinators know that you and your
-                    group are safe at this Help Point.
+                    Let emergency coordinators know how you and your
+                    group are doing at this Help Point.
                 </p>
             </header>
 
             <div className="form-card">
-                <div className="status-confirmation">
-                    <span className="safe-icon">✓</span>
-
-                    <div>
-                        <strong>Status: Safe</strong>
-                        <p>
-                            This check-in reports that your group is currently safe.
-                        </p>
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="status">Status</label>
+                    <select
+                        id="status"
+                        value={status}
+                        onChange={(event) => setStatus(Number(event.target.value))}
+                    >
+                        {STATUS_OPTIONS.map((option) => (
+                            <option key={option.code} value={option.code}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="form-hint">
+                        {STATUS_OPTIONS.find((option) => option.code === status)?.detail}
+                    </p>
                 </div>
 
                 <div className="form-group">
