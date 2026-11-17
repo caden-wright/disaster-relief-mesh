@@ -93,3 +93,36 @@ def test_meta_exposes_code_tables(client):
     meta = client.get("/api/meta").json()
     assert meta["codes"]["msg_type"]["3"]["key"] == "MEDICAL_URGENT"
     assert meta["help_points"] == [1, 2]
+
+
+def test_relay_heard_by_packet_gets_its_config_label_and_role(tmp_path):
+    """A relay first seen through a raw packet (no node-DB entry) must still
+    match config.json's nodes table: label "R1 (battery)", role relay, Up."""
+    from meshaid_gateway.radio import RadioSource, heard_from_packet
+
+    R1 = 0xA35A4668
+
+    class PacketOnlyRadio(RadioSource):
+        kind = "test"
+
+        def start(self, on_frame, on_node):
+            for update in heard_from_packet({"from": R1, "rxSnr": 7.5, "hopStart": 3, "hopLimit": 3}):
+                on_node(update)
+
+        @property
+        def connected(self):
+            return True
+
+    keys = tmp_path / "keys.json"
+    keys.write_text(json.dumps({str(k): v.hex() for k, v in KEYS.items()}))
+    config = Config(radio="sim", key_store_path=keys, db_path=tmp_path / "api.db",
+                    dashboard_dist=tmp_path / "no-dist",
+                    nodes={"!a35a4668": {"role": "relay", "label": "R1 (battery)"}})
+    with TestClient(create_app(config, radio=PacketOnlyRadio())) as c:
+        for _ in range(50):
+            nodes = {n["node_num"]: n for n in c.get("/api/nodes").json()}
+            if R1 in nodes:
+                break
+            time.sleep(0.05)
+    r1 = nodes[R1]
+    assert (r1["label"], r1["role"], r1["status"]) == ("R1 (battery)", "relay", "up")

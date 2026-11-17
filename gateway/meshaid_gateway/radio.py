@@ -86,6 +86,11 @@ def node_update_from_meshtastic(node: dict) -> NodeUpdate:
     )
 
 
+def node_id_for(node_num: int) -> str:
+    """Meshtastic's "!xxxxxxxx" node ID, the form config.json's "nodes" table is keyed by."""
+    return f"!{node_num & 0xFFFFFFFF:08x}"
+
+
 def heard_from_packet(packet: dict, received_at: Optional[float] = None,
                       known_nodes=()) -> list:
     """
@@ -107,12 +112,13 @@ def heard_from_packet(packet: dict, received_at: Optional[float] = None,
     if packet.get("hopStart") is not None and packet.get("hopLimit") is not None:
         hops = packet["hopStart"] - packet["hopLimit"]
     if isinstance(sender, int):
-        updates.append(NodeUpdate(node_num=sender, last_heard=now, snr=packet.get("rxSnr"), hops_away=hops))
+        updates.append(NodeUpdate(node_num=sender, node_id=node_id_for(sender), last_heard=now,
+                                  snr=packet.get("rxSnr"), hops_away=hops))
     relay_byte = packet.get("relayNode")
     if isinstance(relay_byte, int) and relay_byte and hops:
         matches = [n for n in known_nodes if isinstance(n, int) and (n & 0xFF) == relay_byte and n != sender]
         if len(matches) == 1:
-            updates.append(NodeUpdate(node_num=matches[0], last_heard=now))
+            updates.append(NodeUpdate(node_num=matches[0], node_id=node_id_for(matches[0]), last_heard=now))
     return updates
 
 

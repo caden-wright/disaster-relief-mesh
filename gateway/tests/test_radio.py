@@ -42,13 +42,17 @@ def test_heard_from_packet_stamps_sender_with_snr_and_hops():
            "decoded": {"portnum": "TELEMETRY_APP"}}
     (u,) = heard_from_packet(pkt, received_at=100.0)
     assert (u.node_num, u.last_heard, u.snr, u.hops_away) == (R4, 100.0, 6.25, 0)
+    # node_id must be filled in, or config.json labels/roles never match
+    # (R1/R3/R4 showed up as bare numbers labelled "Gateway").
+    assert u.node_id == "!a35a7054"
 
 
 def test_heard_from_packet_credits_the_relay_by_low_byte():
     # R4's nodeinfo arrived one hop away, forwarded by R1 (relayNode 0x68 = 104).
     pkt = {"from": R4, "hopStart": 3, "hopLimit": 2, "relayNode": 104}
     updates = heard_from_packet(pkt, received_at=5.0, known_nodes=[GW, R1, R4])
-    assert [(u.node_num, u.last_heard) for u in updates] == [(R4, 5.0), (R1, 5.0)]
+    assert [(u.node_num, u.node_id, u.last_heard) for u in updates] == [
+        (R4, "!a35a7054", 5.0), (R1, "!a35a4668", 5.0)]
 
 
 def test_heard_from_packet_skips_ambiguous_or_direct_relay_byte():
